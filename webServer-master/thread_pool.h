@@ -9,6 +9,8 @@
 #include <pthread.h>
 #include <iostream>
 
+
+
 template<class T>
 class threadpool
 {
@@ -85,12 +87,14 @@ bool threadpool<T>::append_task(T *task)
 {   //获取互斥锁
     queue_mutex_locker.mutex_lock();
     
-    bool is_signal = task_queue.empty();
+   
     //添加进入队列
     task_queue.push(task);
+
+    bool is_signal = task_queue.empty();
     queue_mutex_locker.mutex_unlock();
     //唤醒等待任务的线程
-    if(is_signal)
+    if(!is_signal)
     {
             queue_cond_locker.signal();
     }
@@ -109,6 +113,10 @@ template <class T>
 T* threadpool<T>::getTask()
 {
     T *task = NULL;
+
+//test task queue
+    //sleep(3);
+
     queue_mutex_locker.mutex_lock();
     if(!task_queue.empty())
     {
